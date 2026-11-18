@@ -1,0 +1,55 @@
+
+# Variable de entorno leida por la extension Rest Client de VS Code
+@baseUrl = {{ dotenv API_URL }}
+
+# Sustituye esta variable por un _id correcto y que exista para probar las rutas por el id
+@productId = husbxsjb
+
+###1.- Crear uno nuevo producto (POST)
+# El JSON es el cuerpo de la peticion que recibirá req.body que tenemos en los controllers
+
+POST {{baseUrl}}
+
+Content-Type: application/json
+{
+    "name": "Monitor Gaming",
+    "descripcion": "Panel IPS 165Hz",
+    "price": 249.99,
+    "stock": 14,
+    "category": "perifericos"
+}
+
+###2.- Obtener todos los productos (GET)
+# Consulta la coleccion completa
+
+GET {{{baseUrl}}}
+Accept: application/json
+
+###3.- Obtener un producto, su detalle mediante el ID
+#La variable productId se inserta en el segmento dinamico de la ruta
+
+GET {{baseUrl}}/{{productId}}
+Accept: application/json
+
+###4.- Actualizar un producto existente (PUT)
+# Este controlador actualiza solo los campos enviados mediante el findByIdAndUpdate
+
+PUT {{baseUrl}}/{{productId}}
+Content-Type: application/json
+
+{
+    "price": 219.99,
+    "stock": 10
+}
+
+###5.- Eliminar un producto
+
+DELETE {{baseUrl}}/{{productId}}
+
+###6.- Prueba Error 404
+# Comprobar la respuesta del Middleware
+ 
+ GET {{baseUrl}}/ruta-falsa
+
+ ###7.- Prueba error 400/500
+ GET {{baseUrl}}/123-id-invalido
