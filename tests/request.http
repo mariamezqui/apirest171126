@@ -1,39 +1,33 @@
 
-# Variable de entorno leida por la extension Rest Client de VS Code
-@baseUrl = {{ dotenv API_URL }}
+@host = http://localhost:3000
+@baseUrl = {{host}}/api/products
 
-# Sustituye esta variable por un _id correcto y que exista para probar las rutas por el id
-@productId = husbxsjb
-
-###1.- Crear uno nuevo producto (POST)
-# El JSON es el cuerpo de la peticion que recibirá req.body que tenemos en los controllers
-
+### 1.- Crear un producto (POST)
+# @name createProduct
 POST {{baseUrl}}
-
 Content-Type: application/json
+
 {
     "name": "Monitor Gaming",
-    "descripcion": "Panel IPS 165Hz",
+    "description": "Panel IPS 165Hz",
     "price": 249.99,
     "stock": 14,
     "category": "perifericos"
 }
 
-###2.- Obtener todos los productos (GET)
-# Consulta la coleccion completa
+###
+# Guarda el _id del producto recién creado para usarlo en las demás peticiones
+@productId = {{createProduct.response.body.data._id}}
 
-GET {{{baseUrl}}}
+### 2.- Obtener todos los productos (GET)
+GET {{baseUrl}}
 Accept: application/json
 
-###3.- Obtener un producto, su detalle mediante el ID
-#La variable productId se inserta en el segmento dinamico de la ruta
-
+### 3.- Obtener un producto por id (GET)
 GET {{baseUrl}}/{{productId}}
 Accept: application/json
 
-###4.- Actualizar un producto existente (PUT)
-# Este controlador actualiza solo los campos enviados mediante el findByIdAndUpdate
-
+### 4.- Actualizar un producto (PUT)
 PUT {{baseUrl}}/{{productId}}
 Content-Type: application/json
 
@@ -42,14 +36,19 @@ Content-Type: application/json
     "stock": 10
 }
 
-###5.- Eliminar un producto
-
+### 5.- Eliminar un producto (DELETE)
 DELETE {{baseUrl}}/{{productId}}
 
-###6.- Prueba Error 404
-# Comprobar la respuesta del Middleware
- 
- GET {{baseUrl}}/ruta-falsa
+### 6.- Error 404: ruta inexistente
+GET {{host}}/ruta-falsa
 
- ###7.- Prueba error 400/500
- GET {{baseUrl}}/123-id-invalido
+### 7.- Error 400: id no válido
+GET {{baseUrl}}/123-id-invalido
+
+### 8.- Error 400: validación (faltan campos obligatorios)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+    "name": "Sin precio ni categoría"
+}
